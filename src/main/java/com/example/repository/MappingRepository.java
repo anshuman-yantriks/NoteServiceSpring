@@ -9,4 +9,6 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface MappingRepository extends ReactiveMongoRepository<NoteAndUserMapping,String> {
     Flux<NoteAndUserMapping> findByUserId(String validToken);
+
+    Flux<NoteAndUserMapping> deleteByNoteId(String noteId);
 }

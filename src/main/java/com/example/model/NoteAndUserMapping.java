@@ -1,11 +1,12 @@
 package com.example.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document("note_and_user_mapping")
 public class NoteAndUserMapping {
-    @Field
+    @Id
     private String noteId;
     @Field
     private String userId;

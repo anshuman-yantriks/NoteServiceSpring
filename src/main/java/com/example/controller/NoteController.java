@@ -3,7 +3,6 @@ package com.example.controller;
 import com.example.dto.NoteDto;
 import com.example.dto.Response;
 import com.example.service.INoteService;
-import io.jsonwebtoken.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +35,13 @@ public class NoteController {
     public Flux<NoteDto> getNotes(@RequestHeader("Authentication") String token){
         return noteService.getNotes(token).map(note -> {
             return new NoteDto(note);
+        });
+    }
+    @RequestMapping(value = "note/{noteId}",method = RequestMethod.DELETE)
+    public Mono<ResponseEntity<Response>> deleteNote(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
+        return noteService.delete(token,noteId).map(note -> {
+            Response response = new Response(200,"successfully updated note",note);
+            return ResponseEntity.ok(response);
         });
     }
 }

@@ -66,6 +66,16 @@ public class NoteServiceImpl implements INoteService{
         });
     }
 
+    @Override
+    public Mono<Note> delete(String token,String noteId) {
+        validToken(token);
+        return noteRepository.findById(noteId).map(note->{
+            mappingRepository.deleteById(noteId).subscribe();
+            noteRepository.deleteById(noteId).subscribe();
+            return note;
+        }).switchIfEmpty(Mono.error(new NoteException("note not found with given note id")));
+    }
+
     private Mono<Boolean> checkValidUserId(String id){
         return webClientFactory.getUserUrl()
                 .get().uri("/user/valid/" + id)

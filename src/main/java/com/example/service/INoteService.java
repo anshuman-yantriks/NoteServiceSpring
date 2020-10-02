@@ -14,4 +14,6 @@ public interface INoteService {
     Mono<Note> update(NoteDto noteDto, String token);
 
     Flux<Note> getNotes(String token);
+
+    Mono<Note> delete(String token,String noteId);
 }
