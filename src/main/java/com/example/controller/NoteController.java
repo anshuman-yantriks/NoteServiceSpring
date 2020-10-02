@@ -7,6 +7,7 @@ import io.jsonwebtoken.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
@@ -23,11 +24,18 @@ public class NoteController {
             return ResponseEntity.ok(response);
         });
     }
+
     @RequestMapping(value = "note",method = RequestMethod.PUT)
     public Mono<ResponseEntity<Response>> updateNote(@RequestHeader("Authentication") String token,@Valid @RequestBody NoteDto noteDto){
         return noteService.update(noteDto,token).map(note -> {
             Response response = new Response(200,"successfully updated note",note);
             return ResponseEntity.ok(response);
+        });
+    }
+    @RequestMapping(value = "note",method = RequestMethod.GET)
+    public Flux<NoteDto> getNotes(@RequestHeader("Authentication") String token){
+        return noteService.getNotes(token).map(note -> {
+            return new NoteDto(note);
         });
     }
 }

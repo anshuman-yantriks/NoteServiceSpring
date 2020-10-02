@@ -13,6 +13,7 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -56,6 +57,13 @@ public class NoteServiceImpl implements INoteService{
             note.setUpdatedTime(LocalDateTime.now());
             return noteRepository.save(note);
         }).switchIfEmpty(Mono.error(new NoteException("note not found with given id")));
+    }
+
+    @Override
+    public Flux<Note> getNotes(String token) {
+        return mappingRepository.findByUserId(validToken(token)).flatMap(mapping->{
+            return noteRepository.findById(mapping.getNoteId());
+        });
     }
 
     private Mono<Boolean> checkValidUserId(String id){
