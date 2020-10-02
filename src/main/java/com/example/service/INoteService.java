@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.dto.NoteDto;
 import com.example.model.Note;
+import com.example.model.NoteAndUserMapping;
 import io.jsonwebtoken.Header;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,4 +17,6 @@ public interface INoteService {
     Flux<Note> getNotes(String token);
 
     Mono<Note> delete(String token,String noteId);
+
+    Mono<NoteAndUserMapping> addCollaborator(String token, String noteId);
 }

@@ -7,8 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document("note_and_user_mapping")
 public class NoteAndUserMapping {
     @Id
-    private String noteId;
+    private String id;
     @Field
+    private String noteId;
+    @Field("user_id")
     private String userId;
 
     public NoteAndUserMapping() {

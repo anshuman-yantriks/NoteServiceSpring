@@ -44,4 +44,11 @@ public class NoteController {
             return ResponseEntity.ok(response);
         });
     }
+    @RequestMapping(value = "note/collaborator/{noteId}",method = RequestMethod.DELETE)
+    public Mono<ResponseEntity<Response>> addCollaborator(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
+        return noteService.addCollaborator(token,noteId).map(note -> {
+            Response response = new Response(200,"successfully updated note",note);
+            return ResponseEntity.ok(response);
+        });
+    }
 }

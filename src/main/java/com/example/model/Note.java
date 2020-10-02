@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class Note {
     @Id
     private String noteId;
-    @Field("owner_id")
-    private String ownerId;
+    @Field("user_id")
+    private String userId;
     @Field
     private String description;
     @Field
@@ -66,17 +66,17 @@ public class Note {
         this.updatedTime = updatedTime;
     }
     public String getOwnerId() {
-        return ownerId;
+        return userId;
     }
 
     public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+        this.userId = ownerId;
     }
 
     public Note(NoteDto noteDto) {
         this.description = noteDto.getDescription();
         this.title = noteDto.getTitle();
-        this.ownerId = noteDto.getOwnerId();
+        this.userId = noteDto.getOwnerId();
         this.createdTime = LocalDateTime.now();
         this.updatedTime = LocalDateTime.now();
     }

@@ -69,9 +69,9 @@ public class NoteServiceImpl implements INoteService{
     @Override
     public Mono<Note> delete(String token,String noteId) {
         validToken(token);
-        return noteRepository.findById(noteId).map(note->{
-            mappingRepository.deleteById(noteId).subscribe();
-            noteRepository.deleteById(noteId).subscribe();
+        return noteRepository.findByNoteId(noteId).map(note->{
+            mappingRepository.deleteByNoteId(noteId).subscribe();
+            noteRepository.deleteByNoteId(noteId).subscribe();
             return note;
         }).switchIfEmpty(Mono.error(new NoteException("note not found with given note id")));
     }
@@ -84,5 +84,17 @@ public class NoteServiceImpl implements INoteService{
     private String validToken(String token){
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         return claims.getBody().getSubject();
+    }
+
+    @Override
+    public Mono<NoteAndUserMapping> addCollaborator(String token, String noteId) {
+        String userId = validToken(token);
+        return mappingRepository.findByNoteIdAndUserId(userId,noteId)
+                .flatMap(e -> Mono.error(new NoteException("Mapping already exist")))
+                .switchIfEmpty(Mono.defer(()-> {
+                    NoteAndUserMapping noteAndUserMapping = new NoteAndUserMapping(userId,noteId);
+                    return mappingRepository.save(noteAndUserMapping);
+                }))
+                .cast(NoteAndUserMapping.class);
     }
 }
