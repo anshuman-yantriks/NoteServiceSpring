@@ -19,4 +19,6 @@ public interface INoteService {
     Mono<Note> delete(String token,String noteId);
 
     Mono<NoteAndUserMapping> addCollaborator(String token, String noteId);
+
+    Mono<NoteAndUserMapping> deleteCollaborator(String token, String noteId);
 }

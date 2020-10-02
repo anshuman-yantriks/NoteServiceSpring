@@ -97,4 +97,13 @@ public class NoteServiceImpl implements INoteService{
                 }))
                 .cast(NoteAndUserMapping.class);
     }
+
+    @Override
+    public Mono<NoteAndUserMapping> deleteCollaborator(String token, String noteId) {
+        return mappingRepository.findByNoteIdAndUserId(validToken(token),noteId)
+                .map(mapping->{
+                    mappingRepository.deleteById(mapping.getId());
+                    return mapping;
+                }).switchIfEmpty(Mono.error(new NoteException("no collaboration found")));
+    }
 }
