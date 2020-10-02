@@ -1,6 +1,7 @@
 package com.example.exception;
 
 import com.example.dto.Response;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,6 +23,11 @@ public class UserGlobalExceptionHandler {
 
     @ExceptionHandler(NoteException.class)
     public Mono<ResponseEntity<Response>> userExceptionHandler(Exception exception){
+        Response response = new Response(401,exception.getMessage(), null);
+        return  Mono.just(new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST));
+    }
+    @ExceptionHandler(ExpiredJwtException.class)
+    public Mono<ResponseEntity<Response>> tokenExceptionHandler(Exception exception){
         Response response = new Response(401,exception.getMessage(), null);
         return  Mono.just(new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST));
     }
