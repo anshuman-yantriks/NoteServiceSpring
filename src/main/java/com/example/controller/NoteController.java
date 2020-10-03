@@ -40,21 +40,21 @@ public class NoteController {
     @RequestMapping(value = "note/{noteId}",method = RequestMethod.DELETE)
     public Mono<ResponseEntity<Response>> deleteNote(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
         return noteService.delete(token,noteId).map(note -> {
-            Response response = new Response(200,"successfully updated note",note);
+            Response response = new Response(200,"successfully deleted note",note);
             return ResponseEntity.ok(response);
         });
     }
     @RequestMapping(value = "note/collaborator/{noteId}",method = RequestMethod.POST)
     public Mono<ResponseEntity<Response>> addCollaborator(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
         return noteService.addCollaborator(token,noteId).map(note -> {
-            Response response = new Response(200,"successfully updated note",note);
+            Response response = new Response(200,"successfully added Collaborator",note);
             return ResponseEntity.ok(response);
         });
     }
     @RequestMapping(value = "note/collaborator/{noteId}",method = RequestMethod.DELETE)
     public Mono<ResponseEntity<Response>> deleteCollaborator(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
         return noteService.deleteCollaborator(token,noteId).map(note -> {
-            Response response = new Response(200,"successfully updated note",note);
+            Response response = new Response(200,"successfully deleted Collaborator",note);
             return ResponseEntity.ok(response);
         });
     }
