@@ -36,6 +36,7 @@ public class NoteServiceImpl implements INoteService{
     public Mono<Note> save(NoteDto noteDto, String token) {
         Note note = new Note(noteDto);
         String userID = validToken(token);
+        noteDto.setOwnerId(userID);
         return checkValidUserId(userID).flatMap(valid->{
             if (valid){
                 return noteRepository.save(note).map(savedNote->{
@@ -89,10 +90,10 @@ public class NoteServiceImpl implements INoteService{
     @Override
     public Mono<NoteAndUserMapping> addCollaborator(String token, String noteId) {
         String userId = validToken(token);
-        return mappingRepository.findByNoteIdAndUserId(userId,noteId)
+        return mappingRepository.findByNoteIdAndUserId(noteId,userId)
                 .flatMap(e -> Mono.error(new NoteException("Mapping already exist")))
                 .switchIfEmpty(Mono.defer(()-> {
-                    NoteAndUserMapping noteAndUserMapping = new NoteAndUserMapping(userId,noteId);
+                    NoteAndUserMapping noteAndUserMapping = new NoteAndUserMapping(noteId,userId);
                     return mappingRepository.save(noteAndUserMapping);
                 }))
                 .cast(NoteAndUserMapping.class);
@@ -100,9 +101,9 @@ public class NoteServiceImpl implements INoteService{
 
     @Override
     public Mono<NoteAndUserMapping> deleteCollaborator(String token, String noteId) {
-        return mappingRepository.findByNoteIdAndUserId(validToken(token),noteId)
+        return mappingRepository.findByNoteIdAndUserId(noteId,validToken(token))
                 .map(mapping->{
-                    mappingRepository.deleteById(mapping.getId());
+                    mappingRepository.deleteById(mapping.getId()).subscribe();
                     return mapping;
                 }).switchIfEmpty(Mono.error(new NoteException("no collaboration found")));
     }
