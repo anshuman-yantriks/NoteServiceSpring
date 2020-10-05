@@ -45,8 +45,8 @@ public class NoteController {
         });
     }
     @RequestMapping(value = "note/collaborator/{noteId}",method = RequestMethod.POST)
-    public Mono<ResponseEntity<Response>> addCollaborator(@RequestHeader("Authentication") String token,@PathVariable("noteId") String noteId){
-        return noteService.addCollaborator(token,noteId).map(note -> {
+    public Mono<ResponseEntity<Response>> addCollaborator(@RequestHeader("Authentication") String token,@RequestHeader("email") String emailId,@PathVariable("noteId") String noteId){
+        return noteService.addCollaborator(token,noteId,emailId).map(note -> {
             Response response = new Response(200,"successfully added Collaborator",note);
             return ResponseEntity.ok(response);
         });

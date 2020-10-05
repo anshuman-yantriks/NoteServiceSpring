@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.dto.EmailDto;
 import com.example.dto.NoteDto;
 import com.example.exception.NoteException;
 import com.example.model.Note;
@@ -10,6 +11,7 @@ import com.example.utility.WebClientFactory;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,9 @@ public class NoteServiceImpl implements INoteService{
 
     @Autowired
     MappingRepository mappingRepository;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     @Value("${jwt.secret}")
     String secretKey;
@@ -88,12 +93,14 @@ public class NoteServiceImpl implements INoteService{
     }
 
     @Override
-    public Mono<NoteAndUserMapping> addCollaborator(String token, String noteId) {
+    public Mono<NoteAndUserMapping> addCollaborator(String token, String noteId,String emailId) {
         String userId = validToken(token);
         return mappingRepository.findByNoteIdAndUserId(noteId,userId)
                 .flatMap(e -> Mono.error(new NoteException("Mapping already exist")))
                 .switchIfEmpty(Mono.defer(()-> {
                     NoteAndUserMapping noteAndUserMapping = new NoteAndUserMapping(noteId,userId);
+                    EmailDto emailDto = new EmailDto("5f79fea5ee1fdd6988bdcb87",emailId,"toSendReset","just a notification");
+                    amqpTemplate.convertAndSend("email-data-exchange", "collaboratorEmail", emailDto.toString());
                     return mappingRepository.save(noteAndUserMapping);
                 }))
                 .cast(NoteAndUserMapping.class);
